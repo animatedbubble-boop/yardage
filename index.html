@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="码数手册">
+<meta name="theme-color" content="#4A2340">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>LZX 码数手册</title>
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+[hidden]{display:none!important}
+
+/* Layout: a mown-fairway header band with the season's headline numbers, then a shot logger,
+   then the bag as a distance ladder — every club on one shared yardage axis, gaps called out */
+:root{
+  --bg:#F6F0F3; --surface:#FFFFFF; --ink:#2A1824; --muted:#76616E; --line:#E6D8E0; --grid:#EEE3E9;
+  --fairway:#4A2340; --fairway-2:#552A4A; --on-fairway:#FBF2F6; --on-fairway-muted:#D7B3C7;
+  --accent:#B5446E; --accent-soft:#F6DDE6; --flag:#D9A441; --warn:#B86A12; --danger:#B4412F;
+  --wood:#7A4F9E; --hybrid:#C0723F; --iron:#B5446E; --wedge:#4F7FA3;
+  --display:"Big Shoulders Display","PingFang SC","Noto Sans SC","PingFang SC","Microsoft YaHei",Impact,system-ui,sans-serif;
+  --body:"Public Sans","PingFang SC","Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#150D13; --surface:#1F141C; --ink:#F1E6EC; --muted:#AE97A5; --line:#36252F; --grid:#2A1C25;
+  --fairway:#341729; --fairway-2:#3D1B30; --on-fairway:#F8EAF1; --on-fairway-muted:#C99BB4;
+  --accent:#E57CA3; --accent-soft:#3A1D2C; --flag:#EDBE5C; --warn:#E39A45; --danger:#E07A66;
+  --wood:#B08AD6; --hybrid:#E39A68; --iron:#E57CA3; --wedge:#86B3D6; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#150D13; --surface:#1F141C; --ink:#F1E6EC; --muted:#AE97A5; --line:#36252F; --grid:#2A1C25;
+  --fairway:#341729; --fairway-2:#3D1B30; --on-fairway:#F8EAF1; --on-fairway-muted:#C99BB4;
+  --accent:#E57CA3; --accent-soft:#3A1D2C; --flag:#EDBE5C; --warn:#E39A45; --danger:#E07A66;
+  --wood:#B08AD6; --hybrid:#E39A68; --iron:#E57CA3; --wedge:#86B3D6; color-scheme:dark}
+
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.45}
+.num{font-variant-numeric:tabular-nums}
+.wrap{max-width:680px;margin:0 auto;box-sizing:border-box;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* Header band */
+.band{background:repeating-linear-gradient(90deg,var(--fairway) 0 56px,var(--fairway-2) 56px 112px);color:var(--on-fairway)}
+.band .wrap{padding-block:28px 26px;display:flex;flex-direction:column;gap:18px}
+.title-row{display:flex;justify-content:space-between;align-items:flex-end;gap:16px}
+.mono{flex:none;display:grid;place-items:center;width:64px;height:64px;border-radius:50%;border:1.5px solid var(--flag);color:var(--flag);font-family:var(--display);font-weight:700;font-size:22px;letter-spacing:.08em;padding-left:.08em;box-sizing:border-box}
+.eyebrow{margin:0;font-size:12px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--on-fairway-muted)}
+h1{margin:4px 0 0;font-family:var(--display);font-weight:800;font-size:clamp(44px,11vw,64px);line-height:.92;letter-spacing:.01em;text-transform:uppercase;text-wrap:balance}
+.headline{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;border-top:1px solid color-mix(in srgb,var(--on-fairway) 22%,transparent);padding-top:14px}
+.headline div{min-width:0}
+.headline dt{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--on-fairway-muted)}
+.headline dd{margin:2px 0 0;font-family:var(--display);font-weight:700;font-size:34px;line-height:1}
+.headline dd small{display:block;font-family:var(--body);font-size:13px;font-weight:500;color:var(--on-fairway-muted);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+main.wrap{padding-block:22px 48px;display:flex;flex-direction:column;gap:28px}
+h2{margin:0;font-family:var(--display);font-weight:700;font-size:26px;letter-spacing:.03em;text-transform:uppercase}
+.sec-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+
+/* Logger */
+.logger{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:14px}
+.lbl{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.chips{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin-top:6px}
+@media (max-width:420px){.chips{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.nums em{white-space:nowrap}
+.chip{border:1.5px solid var(--line);background:var(--bg);border-radius:9px;padding:8px 0;cursor:pointer;
+  font-family:var(--display);font-weight:700;font-size:19px;line-height:1;text-align:center}
+.chip[aria-pressed="true"]{background:var(--fam);border-color:var(--fam);color:var(--surface)}
+.fields{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end}
+@media (max-width:420px){.fields{grid-template-columns:1fr 1fr}.add{grid-column:1/-1}}
+.fields label{display:flex;flex-direction:column;gap:6px;min-width:0}
+.fields input{font-size:18px;background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:10px 12px;width:100%;box-sizing:border-box;min-width:0}
+.add{border:0;border-radius:9px;padding:12px 20px;background:var(--accent);color:var(--surface);font-weight:700;font-size:16px;cursor:pointer;white-space:nowrap}
+.add:disabled{opacity:.5;cursor:not-allowed}
+#status{margin:0;font-size:14px;color:var(--muted);min-height:1.3em}
+#status.err{color:var(--danger)}
+.where{margin:-8px 0 0;font-size:12px;color:var(--muted)}
+
+/* Legend */
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.lg-dot{width:10px;height:10px;border-radius:50%;background:var(--ink)}
+.lg-rng{width:18px;height:6px;border-radius:3px;background:var(--accent);opacity:.35}
+.lg-flag{width:3px;height:12px;border-radius:1px;background:var(--flag)}
+.lg-est{width:10px;height:10px;border-radius:50%;border:2px dashed var(--muted);box-sizing:border-box}
+
+/* Bag ladder */
+.bag{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:4px 16px 14px}
+ul{list-style:none;margin:0;padding:0}
+.club+.club{border-top:1px solid var(--line)}
+.row{all:unset;box-sizing:border-box;width:100%;cursor:pointer;display:grid;
+  grid-template-columns:46px minmax(0,1fr) auto;grid-template-areas:"badge name nums" "badge track track";
+  column-gap:12px;row-gap:8px;align-items:center;padding:14px 0}
+.row:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:8px}
+.badge{grid-area:badge;align-self:start;height:46px;border-radius:10px;display:grid;place-items:center;
+  font-family:var(--display);font-weight:800;font-size:21px;background:var(--fam);color:var(--surface)}
+.club.empty .badge{background:transparent;color:var(--muted);border:1.5px dashed var(--line)}
+.name{grid-area:name;min-width:0;font-weight:600}
+.meta{display:block;font-size:13px;font-weight:400;color:var(--muted)}
+.nums{grid-area:nums;text-align:right;line-height:1}
+.nums b{font-family:var(--display);font-weight:800;font-size:34px}
+.nums em{font-style:normal;font-size:12px;color:var(--muted);margin-left:3px;letter-spacing:.04em}
+.nums b.est{color:var(--muted);font-weight:600}
+.nums .dash{color:var(--line)}
+.gap{display:block;margin-top:5px;font-size:12px;font-weight:600;color:var(--muted)}
+.gap.tight{color:var(--warn)}
+.track{grid-area:track;position:relative;height:14px;border-radius:7px;background-color:var(--bg);
+  background-image:linear-gradient(to right,var(--grid) 0 1px,transparent 1px);background-size:calc(100% / var(--n)) 100%}
+.track .rng{position:absolute;top:4px;height:6px;border-radius:3px;background:var(--fam);opacity:.35}
+.track .avg{position:absolute;top:1px;width:12px;height:12px;margin-left:-6px;border-radius:50%;background:var(--fam);box-shadow:0 0 0 2px var(--surface)}
+.track .flag{position:absolute;top:-3px;width:3px;height:20px;margin-left:-1.5px;border-radius:1px;background:var(--flag)}
+.track .est{position:absolute;top:1px;width:12px;height:12px;margin-left:-6px;border-radius:50%;border:2px dashed var(--muted);box-sizing:border-box}
+.axis{position:relative;height:16px;margin:2px 0 0 58px;font-size:11px;color:var(--muted)}
+.axis span{position:absolute;transform:translateX(-50%)}
+.axis span:first-child{transform:none}.axis span:last-child{transform:translateX(-100%)}
+
+.detail{padding:0 0 14px 58px}
+.detail table{width:100%;border-collapse:collapse;font-size:14px}
+.detail th{text-align:left;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:4px 0}
+.detail td{padding:7px 0;border-top:1px solid var(--line)}
+.detail .r{text-align:right}
+.tagnote{font-size:12px;color:var(--muted)}
+.del{font-size:12px;background:none;border:1px solid var(--line);color:var(--muted);border-radius:6px;padding:3px 8px;cursor:pointer}
+.del.confirm{border-color:var(--danger);color:var(--danger)}
+.none{color:var(--muted);font-size:14px;margin:0}
+.foot{font-size:13px;color:var(--muted);margin:0;max-width:60ch}
+@media (prefers-reduced-motion:no-preference){.track .avg,.track .rng,.track .flag{transition:left .35s ease,width .35s ease}}
+</style>
+</head>
+<body>
+<header class="band">
+  <div class="wrap">
+    <div class="title-row">
+      <div><p class="eyebrow">模拟器距离 · 单位：码</p><h1>码数手册</h1></div>
+      <span class="mono" aria-label="姓名缩写 LZX">LZX</span>
+    </div>
+    <dl class="headline num" id="headline">
+      <div><dt>已记录球杆</dt><dd>—</dd></div>
+      <div><dt>击球数</dt><dd>—</dd></div>
+      <div><dt>最远</dt><dd>—</dd></div>
+    </dl>
+  </div>
+</header>
+
+<main class="wrap">
+  <section aria-labelledby="log-title">
+    <div class="sec-head"><h2 id="log-title">记录一杆</h2></div>
+    <form class="logger" id="shot-form" autocomplete="off">
+      <div>
+        <span class="lbl" id="club-lbl">球杆</span>
+        <div class="chips" id="chips" role="group" aria-labelledby="club-lbl"></div>
+      </div>
+      <div class="fields">
+        <label for="carry"><span class="lbl">飞行距离</span>
+          <input id="carry" type="number" inputmode="numeric" min="1" max="400" placeholder="150"></label>
+        <label for="total"><span class="lbl">总距离</span>
+          <input id="total" type="number" inputmode="numeric" min="1" max="450" placeholder="162"></label>
+        <button class="add" id="add" type="submit">添加</button>
+      </div>
+      <p id="status" role="status">正在加载…</p>
+      <p class="where">记录保存在这部手机的浏览器里，无需注册账号。</p>
+    </form>
+  </section>
+
+  <section aria-labelledby="bag-title">
+    <div class="sec-head">
+      <h2 id="bag-title">球包</h2>
+      <div class="legend" aria-hidden="true">
+        <span><i class="lg-dot"></i>平均</span>
+        <span><i class="lg-rng"></i>范围</span>
+        <span><i class="lg-flag"></i>最远</span>
+      </div>
+    </div>
+    <div class="bag">
+      <ul id="clubs"></ul>
+      <div class="axis num" id="axis"></div>
+    </div>
+  </section>
+
+  <p class="foot">可以填写飞行距离、总距离，或两者都填。每一杆都记下来，不只记最好的，这样平均值才准确。如果和下一支球杆相差不到 8 码会被标出，说明这两支杆的作用重复了。点一下任意球杆可以查看或删除记录。</p>
+</main>
+
+<script>
+document.documentElement.lang="zh-CN";
+const CLUBS=[["D","一号木","wood"],["3W","3号球道木","wood"],["5W","5号球道木","wood"],["7W","7号球道木","wood"],["H","4号铁木","hybrid"],["5H","5号铁木","hybrid"],["5i","5号铁","iron"],["6i","6号铁","iron"],["7i","7号铁","iron"],["8i","8号铁","iron"],["9i","9号铁","iron"],["PW","P杆（劈起杆）","wedge"],["AW","A杆（间隙挖起杆）","wedge"],["SW","S杆（沙坑杆）","wedge"]];
+const $=id=>document.getElementById(id);
+let shots=[],est={},store=null,openSet=new Set(),pendingDel=null,selClub="7i";const LASTKEY="herLastClub";
+try{const last=localStorage.getItem(LASTKEY);if(last&&CLUBS.some(c=>c[0]===last))selClub=last}catch(e){}
+
+function renderChips(){
+  $("chips").innerHTML=CLUBS.map(([k,n,f])=>`<button type="button" class="chip" style="--fam:var(--${f})" data-chip="${k}" aria-pressed="${k===selClub}" aria-label="${n}">${k}</button>`).join("");
+}
+$("chips").addEventListener("click",e=>{const b=e.target.closest("[data-chip]");if(!b)return;selClub=b.dataset.chip;renderChips()});
+
+function setStatus(t,err){$("status").textContent=t;$("status").className=err?"err":""}
+function stats(all){
+  const list=all.filter(s=>!s.bestOnly);
+  const W=s=>s.n>1?s.n:1;
+  const cw=list.filter(s=>s.carry).map(s=>[s.carry,W(s)]),tw=list.filter(s=>s.total).map(s=>[s.total,W(s)]);
+  const wmean=a=>{const w=a.reduce((x,y)=>x+y[1],0);return w?Math.round(a.reduce((x,y)=>x+y[0]*y[1],0)/w):null};
+  const r=(cw.length?cw:tw).map(x=>x[0]);
+  return {n:list.reduce((x,s)=>x+W(s),0),carryOnly:!cw.length&&tw.length>0,avg:wmean(cw)??wmean(tw),
+    min:r.length?Math.min(...r):null,max:r.length?Math.max(...r):null,tot:cw.length?wmean(tw):null,totAvg:wmean(tw),
+    longest:all.length?Math.round(Math.max(...all.map(s=>Math.max(s.carry||0,s.total||0)))):null};
+}
+const fmtDate=ts=>new Date(ts).toLocaleDateString("zh-CN",{month:"short",day:"numeric"});
+const short=n=>n.replace(/（.*）/,"");
+
+function render(){
+  const rows=CLUBS.map(([k,n,f])=>{const list=shots.filter(s=>s.club===k);return {k,n,f,list,st:stats(list),e:est[k]}});
+  // headline
+  const logged=rows.filter(r=>r.st.n),count=rows.reduce((x,r)=>x+r.st.n,0);
+  const best=rows.filter(r=>r.st.longest).sort((a,b)=>b.st.longest-a.st.longest)[0];
+  $("headline").innerHTML=`<div><dt>已记录球杆</dt><dd>${logged.length}<small>球包共 ${CLUBS.length} 支</small></dd></div>
+    <div><dt>击球数</dt><dd>${count}</dd></div>
+    <div><dt>最远</dt><dd>${best?best.st.longest:"—"}<small>${best?short(best.n):"还没有记录"}</small></dd></div>`;
+  // shared axis
+  const vals=[];rows.forEach(r=>{if(r.st.n){vals.push(r.st.min,r.st.max,r.st.longest)}else if(r.e){vals.push(r.e.typical,r.e.longest)}});
+  const lo=vals.length?Math.max(0,Math.floor((Math.min(...vals)-15)/50)*50):50;
+  const hi=vals.length?Math.ceil((Math.max(...vals)+10)/50)*50:250;
+  const span=hi-lo,pct=v=>((v-lo)/span*100).toFixed(2)+"%",nTicks=span/50;
+  // gaps: compare each club's average to the next shorter club that has one
+  const avgOf=r=>r.st.n?r.st.avg:null;
+  $("clubs").innerHTML=rows.map((r,i)=>{
+    const {k,n,f,list,st,e}=r,isOpen=openSet.has(k);
+    const next=rows.slice(i+1).find(x=>avgOf(x)!=null);
+    let gap="";
+    if(st.n&&next){const g=(st.totAvg!=null&&next.st.totAvg!=null)?st.totAvg-next.st.totAvg:st.avg-next.st.avg;gap=`<span class="gap${g<8?" tight":""}">比 ${next.k} ${g>=0?"远":"近"} ${Math.abs(g)}</span>`}
+    let marks="";
+    if(st.n){
+      marks=`<span class="rng" style="left:${pct(st.min)};width:${pct(lo+Math.max(st.max-st.min,1))}"></span>`+
+        (st.longest>st.max?`<span class="flag" style="left:${pct(st.longest)}"></span>`:"")+
+        `<span class="avg" style="left:${pct(st.avg)}"></span>`;
+    }else if(e){marks=`<span class="flag" style="left:${pct(e.longest)};opacity:.4"></span><span class="est" style="left:${pct(e.typical)}"></span>`}
+    const meta=st.n?`${st.n} 杆 · 最远 ${st.longest}${e?` · 估计 ${e.typical}`:""}`:e?`估计 · 最远约 ${e.longest}`:"还没有记录";
+    const nums=st.n?`<b>${st.avg}</b><em>${st.carryOnly?"总距离":"飞行"}</em>${gap}`:e?`<b class="est">${e.typical}</b><em>估计</em>`:`<b class="dash">—</b>`;
+    const detail=!isOpen?"":`<div class="detail num" id="d-${k}">${list.length?`<table><thead><tr><th>日期</th><th class="r">飞行</th><th class="r">总距离</th><th></th></tr></thead><tbody>${
+      list.map(s=>`<tr><td>${fmtDate(s.ts)}${s.n>1?` <span class="tagnote">${s.n} 杆平均</span>`:""}${s.bestOnly?` <span class="tagnote">仅最远</span>`:""}</td><td class="r">${s.carry??"—"}</td><td class="r">${s.total??"—"}</td><td class="r"><button class="del${pendingDel===s.id?" confirm":""}" data-del="${s.id}" type="button">${pendingDel===s.id?"确认删除":"删除"}</button></td></tr>`).join("")
+    }</tbody></table>`:`<p class="none">${n}还没有记录。在上面选 ${k} 来添加。</p>`}</div>`;
+    return `<li class="club${st.n?"":" empty"}" style="--fam:var(--${f})"><button class="row" type="button" data-club="${k}" aria-expanded="${isOpen}" aria-controls="d-${k}">
+      <span class="badge">${k}</span>
+      <span class="name">${n}<span class="meta num">${meta}</span></span>
+      <span class="nums num">${nums}</span>
+      <span class="track" style="--n:${nTicks}" aria-hidden="true">${marks}</span></button>${detail}</li>`;
+  }).join("");
+  let ax="";for(let v=lo;v<=hi;v+=50)ax+=`<span style="left:${pct(v)}">${v}</span>`;
+  $("axis").innerHTML=ax;
+}
+
+$("clubs").addEventListener("click",async e=>{
+  const del=e.target.closest("[data-del]");
+  if(del){
+    const id=del.dataset.del;
+    if(pendingDel!==id){pendingDel=id;render();return}
+    pendingDel=null;
+    try{await store.del(id);setStatus("已删除。")}
+    catch(err){setStatus("删除失败，请再试一次。",true);render()}
+    return;
+  }
+  const row=e.target.closest("[data-club]");if(!row)return;
+  const k=row.dataset.club;openSet.has(k)?openSet.delete(k):openSet.add(k);pendingDel=null;render();
+});
+
+$("shot-form").addEventListener("submit",async e=>{
+  e.preventDefault();if(!store)return;
+  const club=selClub,carry=parseInt($("carry").value,10),total=parseInt($("total").value,10);
+  const hasC=carry>0&&carry<=400,hasT=total>0&&total<=450;
+  if(!hasC&&!hasT){setStatus("请输入飞行距离或总距离（码）。",true);return}
+  $("add").disabled=true;
+  try{
+    await store.add({club,carry:hasC?carry:null,total:hasT?total:null,ts:Date.now()});
+    try{localStorage.setItem(LASTKEY,club)}catch(err){}
+    $("carry").value="";$("total").value="";$("carry").focus();
+    setStatus(`已记录：${CLUBS.find(c=>c[0]===club)[1]} ${hasC?carry:total} 码。`);
+  }catch(err){setStatus("保存失败，请再试一次。",true)}
+  finally{$("add").disabled=false}
+});
+
+renderChips();render();
+const LS="herYardageBook.shots";
+let canSave=true;
+function lsRead(){try{return JSON.parse(localStorage.getItem(LS)||"[]")}catch(e){canSave=false;return []}}
+function lsWrite(a){try{localStorage.setItem(LS,JSON.stringify(a))}catch(e){canSave=false}}
+store={
+  async add(s){s.id="l"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);shots=[s,...shots];lsWrite(shots);render();
+    if(!canSave)setStatus("这个浏览器不允许保存（可能是无痕模式），关闭页面后记录会消失。",true)},
+  async del(id){shots=shots.filter(s=>s.id!==id);lsWrite(shots);render()}
+};
+shots=lsRead().sort((a,b)=>b.ts-a.ts);
+setStatus(canSave?(shots.length?"":"还没有记录。在上面添加第一杆吧。"):"这个浏览器不允许保存（可能是无痕模式），关闭页面后记录会消失。",!canSave);
+render();
+</script>
+</body>
+</html>
